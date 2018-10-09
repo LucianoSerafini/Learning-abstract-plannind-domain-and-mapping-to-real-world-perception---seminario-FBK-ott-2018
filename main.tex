@@ -19,6 +19,10 @@
 \usetikzlibrary{arrows,automata}
 \pgfmathdeclarefunction{gauss}{2}{\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}}
 
+\tikzset{onslide/.code args={<#1>#2}{%
+  \only<#1>{\pgfkeysalso{#2}}}}
+\tikzstyle{highlight}=[fill=blue!20]
+
 \def\updgamma{\mathsf{update\_trans}}
 \def\updf{\mathsf{update\_perc}}
 \def\R{\mathbb{R}}
@@ -286,7 +290,46 @@ $s$.}
 \end{algorithm}}
 \end{frame}
 
+\begin{frame} 
+  \frametitle{Updating Transitions: $\updgamma$ Example}
 
+\begin{tikzpicture}[baseline=(s0.base),auto,->]
+  \node[state, onslide={<1,7,11>{highlight}}] (s0) {$s_{0}$};
+  \node[state, onslide={<2>{highlight}}] at (0:2) (s1) {$s_{1}$};
+  \node[state, onslide={<3,8,12,13>{highlight}}] at (-1*72:2) (s2) {$s_{2}$};
+  \node[state, onslide={<4,9>{highlight}}] at (-2*72:2) (s3) {$s_{3}$};
+  \node[state, onslide={<5>{highlight}}] at (-3*72:2) (s4) {$s_{4}$};
+  \node[state, onslide={<6,10>{highlight}}] at (-4*72:2) (s5) {$s_{5}$};
+  \draw<-13> (s0) to node {a} (s1);
+  \draw<14> (s0) to node {a} (s2);  
+  \draw<8-11>[dashed] (s0) to node {a,1} (s2);
+  \draw<12>[dashed] (s0) to node {a,2} (s2);
+  \draw<13>[dashed] (s0) to node {a,n} (s2);      
+  \draw (s1) to[bend left] node {b} (s2);
+  \draw (s2) to[bend left] node {b} (s3);
+  \draw (s3) to[bend left] node {b} (s4);
+  \draw (s4) to[bend left] node {b} (s5);
+  \draw (s5) to[bend left] node {b} (s1);  
+  \draw (s5) to node {c} (s0);
+\end{tikzpicture}
+\begin{tabular}{rccc}
+iter   &  Source & action & Target \\ \hline \pause
+  1 &  $s_0$  & $a$ & $s_1$ \pause \\
+  2 &  $s_1$  & $b$ & $s_2$ \pause \\
+  3 &  $s_2$  & $b$ & $s_3$ \pause \\
+  4 &  $s_3$  & $b$ & $s_4$ \pause \\  
+  5 &  $s_4$  & $b$ & $s_5$ \pause \\
+  6 &  $s_5$  & $c$ & $s_0$ \pause \\
+  7 &  $s_0$  & $a$ & $s_2$ \pause \\
+  8 &  $s_2$  & $b$ & $s_3$ \\
+  9 &  $s_3$  & $b$ & $s_4$ \\
+  10 &  $s_4$  & $b$ & $s_5$ \pause \\
+  11 &  $s_5$  & $c$ & $s_0$ \pause \\
+  12 &  $s_0$  & $a$ & $s_2$ \pause \\
+  \vdots & \\ 
+  \dots &  $s_0$  & $a$ & $s_2$ \\ 
+\end{tabular}
+\end{frame}
 
 \begin{frame} 
   \frametitle{Updating Transitions: $\updgamma$} 
