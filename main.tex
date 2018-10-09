@@ -829,13 +829,40 @@ computed analytically.
 
 \end{frame}
 
-\begin{frame}{Experimental evaluation}
+\begin{frame}{Experimental evaluation. Simple experiment}
+\begin{itemize}
+\item the world is a $5\times5$ building with random walls
+\item initial model with $S=\{s_0,s_1,s_2,s_3\}$ actions $A=\{n,s,e,w\}$;
+\item $\alpha=0.5$, $\beta=0.5$, $\epsilon=0.5$
+\item the agent has to achieve 10 random goals
+\end{itemize}
+
  \begin{center}
-    \movie{\includegraphics[width=\textwidth]{plot_00001.png}}%
+    \movie{\includegraphics[width=.8\textwidth]{plot_00001.png}}%
     {plots.avi}
   \end{center}
 \end{frame}
-    
+
+\begin{frame}
+\frametitle{Some figures about this simple experiment}
+\begin{tabular}{rrrrr} 
+goal\_id & reached?  & \# iter  &  divergence&   \# states  \\ \hline 
+0   &   yes &       16 &        31.27 &      8    \\ 
+1   &   yes &       45 &        21.41 &     11     \\
+2   &   no &      100 &         7.65 &      22     \\
+3   &   yes &       6 &         7.46 &      22     \\
+4   &   yes &      42 &         7.23 &      22     \\
+5   &   yes &      85 &         6.87 &      23     \\
+6   &   no &      100 &         6.52 &      23     \\
+7   &   no &      100 &         6.54 &      23     \\
+8   &   yes &       8 &         6.55 &      23     \\
+9   &   yes &      30 &         6.55 &      23     \\ \hline 
+    &   \bf 7 &\bf 532 & \bf 6.55 & \bf 23
+\end{tabular}
+\end{frame}
+
+
+
 \begin{frame}
 \frametitle{Experimental Evaluation}
 \scalebox{0.7}{
