@@ -286,6 +286,50 @@ $s$.}
 \end{algorithm}}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Simple single variable perception function}
+
+  \begin{example}
+    \begin{itemize}
+    \item $S=\{{\color{blue}s_1},{\color{red}s_2}\only<5>{,s_{new}}\}$
+    \item $\color{blue}f(x,s_1) = \N(\mu=2,\sigma=0.21)$
+    \item $\color{red}f(x,s_2) = \N(\mu=10,\sigma=0.21)$
+    \only<5>{\item $f(x,s_{new}) = \N(\mu=7,\sigma=0.21)$}           
+    \end{itemize}
+  \end{example}
+  
+  
+\begin{tikzpicture}
+\begin{axis}[every axis plot post/.append style={
+  mark=none,domain=-2:14,samples=50,smooth},
+  width=\textwidth,
+  height=0.5\textwidth,
+  axis x line*=bottom, 
+  axis y line*=left,
+  ymax = 0.34]
+  \addplot {gauss(2,1.5)} node [pos=.25,above] {$f(x,s_1)$};
+  \addplot {gauss(10,1.5)} node [pos=.7 5,above] {$f(x,s_2)$};;
+  \addplot {.1} node[above] {$\epsilon$};
+  \only<2>{\node at (1,0) {$\bullet$};}
+  \only<2>{\node[blue] at (1,0.21) {$\bullet$};}  
+  \only<2>{\draw[dotted] (1,0) -- (1,0.21);}
+  \only<3>{\node at (9,0) {$\bullet$};}
+  \only<3>{\node[red] at (9,0.21) {$\bullet$};}  
+  \only<3>{\draw[dotted] (9,0) -- (9,0.21);}
+  \only<4>{\node at (7,0) {$\bullet$};}
+  \only<4>{\node[red] at (7,0.032) {$\bullet$};}  
+  \only<4>{\draw[dotted] (7,0) -- (7,0.032);}
+  \only<5>{\addplot {gauss(7,1.5)}node [pos=.55,above] {$f(x,s_{new})$};}
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+  \only<2>{\node[blue,left] at (0,0) {$s_1=\argmax_{s\in\{s_1,s_2\}}f(1.0,s)$ and $f(1,0,s_1)\geq \epsilon$};}
+  \only<3>{\node[red,left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(9.0,s)$ and $f(9,0,s_2)\geq \epsilon$};}
+  \only<4>{\node[left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(7.0,s)$ and $f(7,0,s_2) < \epsilon$};}  
+  \only<5>{\node[left] at (0,0) {$s_{new}=\argmax_{s\in\{s_1,s_2,s_{new}\}}f(7.0,s)$ and $f(7,0,s_{new}) \geq \epsilon$};}  
+\end{tikzpicture}
+\end{frame}
 
 
 \begin{frame} 
@@ -314,8 +358,6 @@ We have two options: either change $\gamma$ with the new transition or not.
 {\color {red} Whether we change it or not depends on how much we trust the current model (that has been given or learned so far)}
 \end{itemize}
 \end{frame}
-
-
 
 \begin{frame} 
   \frametitle{Updating Transitions: A proposal} 
