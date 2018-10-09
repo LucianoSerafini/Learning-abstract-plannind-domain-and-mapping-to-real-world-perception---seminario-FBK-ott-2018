@@ -205,18 +205,17 @@ $s$.}
 \end{itemize}  
 \end{frame}
 
+
 \begin{frame}
   \frametitle{Simple univariate perception function}
 
   \begin{example}
     \begin{itemize}
-    \item $S=\{{\color{blue}s_1},{\color{red}s_2}\only<5>{,s_{new}}\}$
+    \item $S=\{{\color{blue}s_1},{\color{red}s_2}\}$
     \item $\color{blue}f(x,s_1) = \N(\mu=2,\sigma=0.21)$
     \item $\color{red}f(x,s_2) = \N(\mu=10,\sigma=0.21)$
-    \only<5>{\item $f(x,s_{new}) = \N(\mu=7,\sigma=0.21)$}           
     \end{itemize}
   \end{example}
-  
   
 \begin{tikzpicture}
 \begin{axis}[every axis plot post/.append style={
@@ -228,28 +227,15 @@ $s$.}
   ymax = 0.34]
   \addplot {gauss(2,1.5)} node [pos=.25,above] {$f(x,s_1)$};
   \addplot {gauss(10,1.5)} node [pos=.7 5,above] {$f(x,s_2)$};;
-  \addplot {.1} node[above] {$\epsilon$};
-  \only<2>{\node at (1,0) {$\bullet$};}
-  \only<2>{\node[blue] at (1,0.21) {$\bullet$};}  
-  \only<2>{\draw[dotted] (1,0) -- (1,0.21);}
-  \only<3>{\node at (9,0) {$\bullet$};}
-  \only<3>{\node[red] at (9,0.21) {$\bullet$};}  
-  \only<3>{\draw[dotted] (9,0) -- (9,0.21);}
-  \only<4>{\node at (7,0) {$\bullet$};}
-  \only<4>{\node[red] at (7,0.032) {$\bullet$};}  
-  \only<4>{\draw[dotted] (7,0) -- (7,0.032);}
-  \only<5>{\addplot {gauss(7,1.5)}node [pos=.55,above] {$f(x,s_{new})$};}
+  \node at (1,0) {$\bullet$};
+  \node[blue] at (1,0.21) {$\bullet$};
+  \draw[dotted] (1,0) -- (1,0.21);
+  \node at (9,0) {$\bullet$};
+  \node[red] at (9,0.21) {$\bullet$};
+  \draw[dotted] (9,0) -- (9,0.21);
 \end{axis}
 \end{tikzpicture}
-
-\begin{tikzpicture}
-  \only<2>{\node[blue,left] at (0,0) {$s_1=\argmax_{s\in\{s_1,s_2\}}f(1.0,s)$ and $f(1,0,s_1)\geq \epsilon$};}
-  \only<3>{\node[red,left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(9.0,s)$ and $f(9,0,s_2)\geq \epsilon$};}
-  \only<4>{\node[left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(7.0,s)$ and $f(7,0,s_2) < \epsilon$};}  
-  \only<5>{\node[left] at (0,0) {$s_{new}=\argmax_{s\in\{s_1,s_2,s_{new}\}}f(7.0,s)$ and $f(7,0,s_{new}) \geq \epsilon$};}  
-\end{tikzpicture}
 \end{frame}
-
 
 \begin{frame}
 \frametitle{The Planning, Acting, and Learning (PAL) Algorithm}
@@ -291,45 +277,60 @@ $s$.}
 \end{algorithm}}
 \end{frame}
 
-\begin{frame} 
-  \frametitle{Updating Transitions: $\updgamma$ Example}
+\begin{frame}
+Loop until reached goal: 
+\begin{enumerate}
+\item Pianifica (e se non trovi il piano esplora) 
+\item esegui un'azione e osserva i sensori ($\bx$)
+\item \alert<2>{decidi in quale stato sei in base a max likelihood ($\argmax_{s\in S}f(\bx,s)$)}
+\item \alert<2>{se nessuno stato giustifica sufficientemente l'osservaizione $\bx$ introduci un nuovo stato $s_{new}$}
+\item aggiorna $\gamma$
+\item aggiorna $f$ 
+\end{enumerate}
+\end{frame}
+\begin{frame}
+  \frametitle{Simple univariate perception function}
 
-\begin{tikzpicture}[baseline=(s0.base),auto,->]
-  \node[state, onslide={<1,7,11>{highlight}}] (s0) {$s_{0}$};
-  \node[state, onslide={<2>{highlight}}] at (0:2) (s1) {$s_{1}$};
-  \node[state, onslide={<3,8,12,13>{highlight}}] at (-1*72:2) (s2) {$s_{2}$};
-  \node[state, onslide={<4,9>{highlight}}] at (-2*72:2) (s3) {$s_{3}$};
-  \node[state, onslide={<5>{highlight}}] at (-3*72:2) (s4) {$s_{4}$};
-  \node[state, onslide={<6,10>{highlight}}] at (-4*72:2) (s5) {$s_{5}$};
-  \draw<-13> (s0) to node {a} (s1);
-  \draw<14> (s0) to node {a} (s2);  
-  \draw<8-11>[dashed] (s0) to node {a,1} (s2);
-  \draw<12>[dashed] (s0) to node {a,2} (s2);
-  \draw<13>[dashed] (s0) to node {a,n} (s2);      
-  \draw (s1) to[bend left] node {b} (s2);
-  \draw (s2) to[bend left] node {b} (s3);
-  \draw (s3) to[bend left] node {b} (s4);
-  \draw (s4) to[bend left] node {b} (s5);
-  \draw (s5) to[bend left] node {b} (s1);  
-  \draw (s5) to node {c} (s0);
+  \begin{example}
+    \begin{itemize}
+    \item $S=\{{\color{blue}s_1},{\color{red}s_2}\only<5>{,s_{new}}\}$
+    \item $\color{blue}f(x,s_1) = \N(\mu=2,\sigma=0.21)$
+    \item $\color{red}f(x,s_2) = \N(\mu=10,\sigma=0.21)$
+    \only<5>{\item $f(x,s_{new}) = \N(\mu=7,\sigma=0.21)$}           
+    \end{itemize}
+  \end{example}
+  
+  
+\begin{tikzpicture}
+\begin{axis}[every axis plot post/.append style={
+  mark=none,domain=-2:14,samples=50,smooth},
+  width=\textwidth,
+  height=0.5\textwidth,
+  axis x line*=bottom, 
+  axis y line*=left,
+  ymax = 0.34]
+  \addplot {gauss(2,1.5)} node [pos=.25,above] {$f(x,s_1)$};
+  \addplot {gauss(10,1.5)} node [pos=.7 5,above] {$f(x,s_2)$};;
+  \addplot {.1} node[above] {$\epsilon$};
+  \only<2>{\node at (1,0) {$\bullet$};}
+  \only<2>{\node[blue] at (1,0.21) {$\bullet$};}  
+  \only<2>{\draw[dotted] (1,0) -- (1,0.21);}
+  \only<3>{\node at (9,0) {$\bullet$};}
+  \only<3>{\node[red] at (9,0.21) {$\bullet$};}  
+  \only<3>{\draw[dotted] (9,0) -- (9,0.21);}
+  \only<4>{\node at (7,0) {$\bullet$};}
+  \only<4>{\node[red] at (7,0.032) {$\bullet$};}  
+  \only<4>{\draw[dotted] (7,0) -- (7,0.032);}
+  \only<5>{\addplot {gauss(7,1.5)}node [pos=.55,above] {$f(x,s_{new})$};}
+\end{axis}
 \end{tikzpicture}
-\begin{tabular}{rccc}
-iter   &  Source & action & Target \\ \hline \pause
-  1 &  $s_0$  & $a$ & $s_1$ \pause \\
-  2 &  $s_1$  & $b$ & $s_2$ \pause \\
-  3 &  $s_2$  & $b$ & $s_3$ \pause \\
-  4 &  $s_3$  & $b$ & $s_4$ \pause \\  
-  5 &  $s_4$  & $b$ & $s_5$ \pause \\
-  6 &  $s_5$  & $c$ & $s_0$ \pause \\
-  7 &  $s_0$  & $a$ & $s_2$ \pause \\
-  8 &  $s_2$  & $b$ & $s_3$ \\
-  9 &  $s_3$  & $b$ & $s_4$ \\
-  10 &  $s_4$  & $b$ & $s_5$ \pause \\
-  11 &  $s_5$  & $c$ & $s_0$ \pause \\
-  12 &  $s_0$  & $a$ & $s_2$ \pause \\
-  \vdots & \\ 
-  \dots &  $s_0$  & $a$ & $s_2$ \\ 
-\end{tabular}
+
+\begin{tikzpicture}
+  \only<2>{\node[blue,left] at (0,0) {$s_1=\argmax_{s\in\{s_1,s_2\}}f(1.0,s)$ and $f(1.0,s_1)\geq \epsilon$};}
+  \only<3>{\node[red,left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(9.0,s)$ and $f(9.0,s_2)\geq \epsilon$};}
+  \only<4>{\node[left] at (0,0) {$s_2=\argmax_{s\in\{s_1,s_2\}}f(7.0,s)$ and $f(7.0,s_2) < \epsilon$};}  
+  \only<5>{\node[left] at (0,0) {$s_{new}=\argmax_{s\in\{s_1,s_2,s_{new}\}}f(7.0,s)$ and $f(7,0,s_{new}) \geq \epsilon$};}  
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame} 
@@ -359,6 +360,48 @@ We have two options: either change $\gamma$ with the new transition or not.
 \end{itemize}
 \end{frame}
 
+
+\begin{frame} 
+  \frametitle{Updating Transitions: $\updgamma$ Example}
+
+\begin{tikzpicture}[baseline=(s0.base),auto,->]
+  \node[state, onslide={<1,7,11>{highlight}}] (s0) {$s_{0}$};
+  \node[state, onslide={<2>{highlight}}] at (0:2) (s1) {$s_{1}$};
+  \node[state, onslide={<3,8,12,13>{highlight}}] at (-1*72:2) (s2) {$s_{2}$};
+  \node[state, onslide={<4,9>{highlight}}] at (-2*72:2) (s3) {$s_{3}$};
+  \node[state, onslide={<5>{highlight}}] at (-3*72:2) (s4) {$s_{4}$};
+  \node[state, onslide={<6,10>{highlight}}] at (-4*72:2) (s5) {$s_{5}$};
+  \draw<-13> (s0) to node {a} (s1);
+  \draw<14> (s0) to node {a} (s2);  
+  \draw<8-11>[dashed] (s0) to node {a,1} (s2);
+  \draw<12>[dashed] (s0) to node {a,2} (s2);
+  \draw<13>[dashed] (s0) to node {a,n} (s2);      
+  \draw (s1) to[bend left] node {b} (s2);
+  \draw (s2) to[bend left] node {b} (s3);
+  \draw (s3) to[bend left] node {b} (s4);
+  \draw (s4) to[bend left] node {b} (s5);
+  \draw (s5) to[bend left] node {b} (s1);  
+  \draw (s5) to node {c} (s0);
+\end{tikzpicture}
+\begin{tabular}{rccc}
+\multicolumn{4}{c}{$\T$} \\ \hline 
+iter   &  Source & action & Target \\ \hline \pause
+  $\T_1$ &  $s_0$  & $a$ & $s_1$ \pause \\
+  $\T_2 $&  $s_1$  & $b$ & $s_2$ \pause \\
+  $\T_3 $&  $s_2$  & $b$ & $s_3$ \pause \\
+  $\T_4 $&  $s_3$  & $b$ & $s_4$ \pause \\  
+  $\T_5 $&  $s_4$  & $b$ & $s_5$ \pause \\
+  $\T_6 $&  $s_5$  & $c$ & $s_0$ \pause \\
+  $\T_7 $&  $s_0$  & $a$ & $s_2$ \pause \\
+  $\T_8 $&  $s_2$  & $b$ & $s_3$ \\
+  $\T_9 $&  $s_3$  & $b$ & $s_4$ \\
+  $\T_{10} $ &  $s_4$  & $b$ & $s_5$ \pause \\
+  $\T_{11} $ &  $s_5$  & $c$ & $s_0$ \pause \\
+  $\T_{12} $ &  $s_0$  & $a$ & $s_2$ \pause \\
+  \vdots & \\ 
+  \dots &  $s_0$  & $a$ & $s_2$ \\ 
+\end{tabular}
+\end{frame}
 
 
 \begin{frame} 
@@ -739,94 +782,51 @@ and $\Delta\bSigma^2_s = \frac{1}{|O(s)|}(\bx-\bmu_s')^2 +
 \end{frame}
 
 \begin{frame}
-\frametitle{Measuring the Coherence of the Model}
-\footnotesize
-\begin{itemize}
-\item[$\bullet$] 
-We represent the effects of executing the action $a$ in the real world with
-$p_a(\bx'|\bx)$, i.e., the probability of measuring $\bx'$ after executing the action $a$.
-\item[$\bullet$] 
-We compare $p_a(\bx'|\bx)$ with $p(\bx'|s')$, 
-the probability of observing $\bx'$ after the execution
-of $a$ according to the agent's abstract model 
-\item[$\bullet$] 
-{\em KL divergence} 
-$KL(p_a(\bx'|\bx)||p(\bx'|s'))$,
-defined as: 
-$$
-\int_{\bx'}p_a(\bx'|\bx)\log\left(\frac{p_a(\bx'|\bx)}{p(\bx'|s')}\right)\:d\bx'
-$$
-\item[$\bullet$] 
-{\em Divergence measure} 
-\begin{align}
-  \label{eq:coherence}
-  \int_{\bx}\sum_{a\in
-  A}\mathrm{KL}(p_a(\bx'|\bx)||p(\bx'|\gamma(a,s_{\bx})))\cdot p_A(\bx)\: d\bx
-\end{align}
-where $s_{\bx}=\argmax_{s\in  S}f(\bx,s))$ and $p_A(\bx)$ is a distribution of all the possible perceptions
-that can be obtained by the agent following all the possible sequences
-of actions, i.e., 
-$$
-p_A(\bx)=\sum_{\left<a_1.\dots,a_n\right>\in A^+}p_{a_n}(\bx|\bx^{(n-1)})\cdot\prod_{i=1}^{n-1}p_{a_i}(\bx^{(i)}|\bx^{(i-1)})
-$$
-\def\ba{\mathbf{a}}
-%
-where $A^+$ is the set of finite non empty sequences of actions in $A$
-and $\bx^{(0)}$ is the perception of the agent in the initial state. 
-\end{itemize}
+  \frametitle{Model coherence}
+  \begin{itemize}
+    \item In order to estimate the quality of the model generated by the \PAL\
+algorithm, we should define a method to measure the coherence between
+an abstract model with perception function and the real world.
 
+\item We introduce a measure called \emph{divergence}. 
+Intuitively, a low divergence means that if
+$\gamma(a,s) = s'$, then if the agent perceives to be in $s$ and
+performs $a$, then after the execution of $a$ it will perceive to
+be in the state $s'$.
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Measuring the Coherence of the Model}
-\footnotesize
-We estimate \eqref{eq:coherence} by random walk sampling method. Starting
-from an initial observation $\bx^{(0)}$ we generate $N$ random
-walks ${\bf a}_1,\dots,{\bf a}_N$, 
-%
-with
-${\bf a}_i=\langle a_{i,1},\dots,a_{i,n_i}\rangle$ and sample $\bx^{(i)}$
-from $\prod_{j=1}^{n_i}p_{a_{ij}}(\bx_{j}|\bx_{j-1})$. 
-We approximate \eqref{eq:coherence} with
-\begin{align}
-  \label{eq:coherence-approx}
-\frac{1}{N}\sum_{k=1}^N\sum_{a\in A}\mathrm{KL}(p_a(\bx'|\bx^{(k)})|| p(\bx'|\gamma(a,s^{(k)})))
-\end{align}
-where $s^{(k)} = \argmax_{s\in S}f(\bx^{(k)},s)$ for $1\leq k \leq
-n$. 
-In our specific example, since we are working with Gaussian
-distributions, we have that 
-%
-$p_a(\bx'|\bx) =
-\N(\bmu=a(\bx),\bSigma=\bSigma_a)$,
-%
-where $a(\bx)$ 
-is some real function that maps  
-$\bx$ in the expected value $a(\bx)$ after performing the action $a$, and $\bSigma_a$ is the model of the noise of the
-sensors/actuators associated to $a$. For instance, in the 6 room example:
+  \frametitle{Estimating the coherence of the model}
+\begin{center}
+\onslide<2->{\begin{tikzpicture}[scale=2.2,auto,->]
+  \node[state] at (0,0) (s1) {$s_{1}$};
+  \node[state] at (1,0) (s2) {$s_{2}$};
+  \draw (s1) to node {a} (s2);
+\end{tikzpicture}}
+
+\begin{tikzpicture}
+\begin{axis}[every axis plot post/.append style={
+  mark=none,domain=-2:14,samples=50,smooth},
+  width=\textwidth,
+  height=0.5\textwidth,
+  axis x line*=bottom, 
+  axis y line*=left,
+  ymax = 0.34]
+  \node[label={$x_0$}] (x0) at (1,0) {$\bullet$};
+  \only<2>{\node[blue] at (1,0.21) {$\bullet$};}
+  \addplot[white]{gauss(2,1.5)} node [pos=.25,above] {$f(x,s_1)$};
+  \only<2>{\addplot[blue]{gauss(2,1.5)} node [pos=.25,above] {$f(x,s_1)$};}
+  \only<3->{\addplot[blue] {gauss(9,1.5)} node [pos=.65,above left] {$f(x,\gamma(a,s_1))$};}
+  \only<4->{\addplot[red] {gauss(10,1.3)} node [pos=.8,above right] {$p_a(x|x_0)$};}
+\end{axis}
+\end{tikzpicture}
 $$
-e(\langle x,y\rangle)=
-\begin{cases}
-  \langle x+1,y\rangle & \parbox[t]{.3\textwidth}{If there are no walls
-    between \\ $\left<x,y\right>$ ad $\left<x+1,y\right>$} \\
-    \langle x,y\rangle & \mbox{Otherwise}
-  \end{cases}
-  $$
-Furthermore, the KL divergence of Multivariate Gaussians can be
-computed analytically. 
-
-% using the following equation 
-% \begin{equation}
-%   \begin{split}
-% & \frac{1}{2}\biggl( 
-%   \log\frac{|\bSigma_{\gamma(a,s)}|}
-%     {|\bSigma_{a}|}-d+tr(\bSigma_{\gamma(a,s)}^{-1}\bSigma_{a})
-%      \\
-%     &  \quad +(\bmu_{\gamma(a,s)}-a(\bx))^{\mathsf{T}}\bSigma_{\gamma(a,s)}^{-1}(\bmu_{\gamma(a,s)}-a(\bx))\biggr)
-% \end{split}
-% \end{equation}
-% where $d$ is the dimension of $\bx$.
-
+\only<4>{\text{KL}({\color{blue}f(x,\gamma(a,s_1))}||{\color{red}p_a(x|x_0)})}
+\only<5>{\sum_{i=1}^n\sum_{a\in A}
+  \text{KL}({\color{blue}f(x,\gamma(a,s_i))}||{\color{red}p_a(x|x_i)})}
+$$
+\end{center}
 \end{frame}
 
 \begin{frame}{Experimental evaluation. Simple experiment}
@@ -1103,6 +1103,99 @@ State merging and state elimination}
   \end{itemize}
 \end{frame}
 \end{document}
+
+
+
+\begin{frame}
+\frametitle{Measuring the Coherence of the Model}
+\footnotesize
+\begin{itemize}
+\item[$\bullet$] 
+We represent the effects of executing the action $a$ in the real world with
+$p_a(\bx'|\bx)$, i.e., the probability of measuring $\bx'$ after executing the action $a$.
+\item[$\bullet$] 
+We compare $p_a(\bx'|\bx)$ with $p(\bx'|s')$, 
+the probability of observing $\bx'$ after the execution
+of $a$ according to the agent's abstract model 
+\item[$\bullet$] 
+{\em KL divergence} 
+$KL(p_a(\bx'|\bx)||p(\bx'|s'))$,
+defined as: 
+$$
+\int_{\bx'}p_a(\bx'|\bx)\log\left(\frac{p_a(\bx'|\bx)}{p(\bx'|s')}\right)\:d\bx'
+$$
+\item[$\bullet$] 
+{\em Divergence measure} 
+\begin{align}
+  \label{eq:coherence}
+  \int_{\bx}\sum_{a\in
+  A}\mathrm{KL}(p_a(\bx'|\bx)||p(\bx'|\gamma(a,s_{\bx})))\cdot p_A(\bx)\: d\bx
+\end{align}
+where $s_{\bx}=\argmax_{s\in  S}f(\bx,s))$ and $p_A(\bx)$ is a distribution of all the possible perceptions
+that can be obtained by the agent following all the possible sequences
+of actions, i.e., 
+$$
+p_A(\bx)=\sum_{\left<a_1.\dots,a_n\right>\in A^+}p_{a_n}(\bx|\bx^{(n-1)})\cdot\prod_{i=1}^{n-1}p_{a_i}(\bx^{(i)}|\bx^{(i-1)})
+$$
+\def\ba{\mathbf{a}}
+%
+where $A^+$ is the set of finite non empty sequences of actions in $A$
+and $\bx^{(0)}$ is the perception of the agent in the initial state. 
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Measuring the Coherence of the Model}
+\footnotesize
+We estimate \eqref{eq:coherence} by random walk sampling method. Starting
+from an initial observation $\bx^{(0)}$ we generate $N$ random
+walks ${\bf a}_1,\dots,{\bf a}_N$, 
+%
+with
+${\bf a}_i=\langle a_{i,1},\dots,a_{i,n_i}\rangle$ and sample $\bx^{(i)}$
+from $\prod_{j=1}^{n_i}p_{a_{ij}}(\bx_{j}|\bx_{j-1})$. 
+We approximate \eqref{eq:coherence} with
+\begin{align}
+  \label{eq:coherence-approx}
+\frac{1}{N}\sum_{k=1}^N\sum_{a\in A}\mathrm{KL}(p_a(\bx'|\bx^{(k)})|| p(\bx'|\gamma(a,s^{(k)})))
+\end{align}
+where $s^{(k)} = \argmax_{s\in S}f(\bx^{(k)},s)$ for $1\leq k \leq
+n$. 
+In our specific example, since we are working with Gaussian
+distributions, we have that 
+%
+$p_a(\bx'|\bx) =
+\N(\bmu=a(\bx),\bSigma=\bSigma_a)$,
+%
+where $a(\bx)$ 
+is some real function that maps  
+$\bx$ in the expected value $a(\bx)$ after performing the action $a$, and $\bSigma_a$ is the model of the noise of the
+sensors/actuators associated to $a$. For instance, in the 6 room example:
+$$
+e(\langle x,y\rangle)=
+\begin{cases}
+  \langle x+1,y\rangle & \parbox[t]{.3\textwidth}{If there are no walls
+    between \\ $\left<x,y\right>$ ad $\left<x+1,y\right>$} \\
+    \langle x,y\rangle & \mbox{Otherwise}
+  \end{cases}
+  $$
+Furthermore, the KL divergence of Multivariate Gaussians can be
+computed analytically. 
+
+% using the following equation 
+% \begin{equation}
+%   \begin{split}
+% & \frac{1}{2}\biggl( 
+%   \log\frac{|\bSigma_{\gamma(a,s)}|}
+%     {|\bSigma_{a}|}-d+tr(\bSigma_{\gamma(a,s)}^{-1}\bSigma_{a})
+%      \\
+%     &  \quad +(\bmu_{\gamma(a,s)}-a(\bx))^{\mathsf{T}}\bSigma_{\gamma(a,s)}^{-1}(\bmu_{\gamma(a,s)}-a(\bx))\biggr)
+% \end{split}
+% \end{equation}
+% where $d$ is the dimension of $\bx$.
+
+
 
 
 if such a likelihood is below the threshold $(1-\epsilon)\cdot\max
