@@ -120,10 +120,9 @@
 \begin{frame}\small
   \frametitle{Overview}
   \begin{block}{Abstract world and real world}
-   While an agent can conveniently plan at the
-  \alert{abstract level}, it perceives the world and acts in it through
-  sensors and actuators that work with data in a \alert{continuous world},
-  typically represented with variables on real numbers.
+   While an agent can conveniently \alert{plan at the
+  abstract level}, it perceives the world and acts in it through sensors and actuators that work with data in a \alert{continuous world},
+  typically represented with \alert{variables on real numbers}.
   \end{block}\pause 
   \begin{block}{Planning and Learning}
       Most of the works on planning and learning assumes
@@ -132,7 +131,7 @@
       \item the mapping between the observations
         from the real word and the states is implicit and fixed
       \end{enumerate}
-    the focus is on \alert{learning the transitions} between
+    the focus is on learning the transitions between
     states.
   \end{block}\pause 
   \begin{block}{Unexpected observations}
@@ -188,21 +187,72 @@ planning domain.
 \frametitle{Planning Domains with  Perception Functions}
 
 \begin{itemize}
-\item 
+\item[$\bullet$] 
 Deterministic Planning Domain: $\PD=\left<S,A,\gamma\right>$
-\item 
+\item[$\bullet$]
 State transition function: $\gamma: S \times A \rightarrow S$
-\item
+\item[$\bullet$]
 Planning Problem: $\PP= \left<\PD,s_0,S_g\right>$
-\item
+\item[$\bullet$]
 A Plan $\pi$ is a policy:
 partial function from $\pi: S  \rightharpoonup A$.  
-\pause
-\item
+\onslide<2>{
+\item[$\bullet$]
 {\color {red} Perception Function:  $f:\R^n\times S\rightarrow R^+$}, where $f(\bx,s) = p(\bx|s)$ is a join PDF on $\R^n\times S$\\
 {\color {red} $f(\bx,s)$ is the likelihood of observing $\bx$ being in a state
 $s$.}
+}
 \end{itemize}  
+%
+\begin{tabular}{cc}
+\begin{tikzpicture}[scale=0.5,auto,->]
+  \node[state] (s11) {$s_{11}$};
+  \node[fill=blue!20,state] {$s_{11}$};
+  \node[state,above = of s11] (s12) {$s_{12}$};
+  \node[fill=blue!20,state,above = of s11] {$s_{12}$};  
+  \node[state,right = of s11] (s21) {$s_{21}$};
+  \node[fill=blue!20,state,right = of s11] {$s_{21}$};
+  \node[state,above = of s21] (s22) {$s_{22}$};
+   \node[fill=blue!20,state,above = of s21] {$s_{22}$};
+   \node[fill=red!20,state,right = of s21] (s31) {$s_{31}$};
+   \node[fill=red!20,state,right = of s22] (s32) {$s_{32}$};
+\path (s11) edge [bend left] node {$e$} (s21);
+%\path (s21) edge [bend left] node {$n$} (s22);
+%\path (s22) edge [bend left] node {$w$} (s12);
+\path (s12) edge [bend left] node {$s$} (s11);
+\path (s11) edge [bend left] node {$n$} (s12);
+\path (s21) edge [bend left] node {$w$} (s11);
+%\path (s12) edge [bend left] node {$e$} (s22);
+%\path (s22) edge [bend left] node {$s$} (s21);
+\path[red] (s21) edge [bend left] node {$e$} (s31);
+\path[red] (s31) edge [bend left] node {$w$} (s21);
+\path[red] (s31) edge [bend left] node {$n$} (s32);
+\path[red] (s32) edge [bend left] node {$s$} (s31);
+\path[red] (s32) edge [bend left] node {$w$} (s22);
+\path[red] (s22) edge [bend left] node {$e$} (s32);
+\end{tikzpicture} &
+\onslide<2>{
+%\vspace*{0.4cm}
+\begin{tikzpicture}[scale=0.5]
+\begin{axis}[every axis plot post/.append style={
+  mark=none,domain=-2:6,samples=50,smooth},
+  width=\textwidth,
+  height=0.5\textwidth,
+  axis x line*=bottom, 
+  axis y line*=left,
+  ymax = 0.34]
+  \addplot {gauss(2,1.5)} node [pos=0.5,above] {$f(x,s)$};
+%  \addplot {gauss(10,1.5)} node [pos=.7 5,above] {$f(x,s_2)$};;
+  \node at (1,0) {$\bullet$};
+  \node[blue] at (1,0.21) {$\bullet$};
+  \draw[dotted] (1,0) -- (1,0.21);
+%  \node at (9,0) {$\bullet$};
+%  \node[red] at (9,0.21) {$\bullet$};
+%  \draw[dotted] (9,0) -- (9,0.21);
+\end{axis}
+\end{tikzpicture}
+}
+\end{tabular}
 \end{frame}
 
 
@@ -249,10 +299,8 @@ $s$.}
    \REQUIRE{$p_{init}(\cdot)$ initialization for $f(\cdot,s)$}
    \STATE{$\T\gets\langle\rangle$}\ \ \ \ \ \COMMENT{The empty history of transitions}
    \STATE{$\O\gets\langle\rangle$}\ \ \ \ \ \COMMENT{The empty history of observations}
-\pause
    \WHILE{$s_0\not\in S_g$}
    \STATE {\color {red} $\pi\gets plan(\PP)$}
-\pause
    \WHILE {$\pi(s_0)$ is defined and $\gamma$ has not been changed} 
    \STATE {\color {red} $\bx\gets act(\pi(s_0))$} 
    \STATE {\color {red} $s'_0 \gets \arg\!\max_{s\in S}f(\bx,s)$}
@@ -262,12 +310,10 @@ $s$.}
    \STATE $S\gets S\cup\{s_{new}\}$
    \STATE $f(\cdot,s_{new}) = p_{init}(\cdot)$
    \ENDIF
-\pause
    \STATE{$\T \gets append(T,\left<s_0,\pi(s_0),s_0'\right>)$}
    \COMMENT{extend the transition history with the last one}
    \STATE{$\O \gets append(\O,\left<s'_0,\bx\right>$)}
    \COMMENT{extend the observation history with the last one}
-\pause
    \STATE {\color {red} $\gamma \gets \updgamma(\gamma,\T)$}
            \STATE {\color {red} $f \gets \updf(f,\O)$}
    \STATE $ s_0 \gets s'_0$
@@ -277,17 +323,33 @@ $s$.}
 \end{algorithm}}
 \end{frame}
 
+% \begin{frame}
+% \frametitle{The Planning, Acting, and Learning (PAL) Algorithm}
+% Loop until goal reached: 
+% \begin{enumerate}
+% \item generate a plan $\pi$ that reaches the goal (if no plan exists explore the domain, e.g., with a random policy) 
+% \item execute the first action in the plan and observe $\bx$ through sensors
+% \item \alert<2>{decide in which states you are based on maximum likelihood ($\argmax_{s\in S}f(\bx,s)$)}
+% \item \alert<2>{if the likelihood $f(\bx,s)$ is too low for all the existing states $s \in S$, create a new state $s_{new}$}
+% \item update $\gamma$ by keeping into account  the history of transitions $\T$ ($\updgamma(\gamma,\T)$
+% \item update $f$ by keeping into account  the history of observations $\O$
+% ($\updf(f,\O)$)
+% \end{enumerate}
+% \end{frame}
+
 \begin{frame}
-Loop until reached goal: 
+\frametitle{The Planning, Acting, and Learning (PAL) Algorithm}
+Loop until goal reached: 
 \begin{enumerate}
-\item Pianifica (e se non trovi il piano esplora) 
-\item esegui un'azione e osserva i sensori ($\bx$)
-\item \alert<2>{decidi in quale stato sei in base a max likelihood ($\argmax_{s\in S}f(\bx,s)$)}
-\item \alert<2>{se nessuno stato giustifica sufficientemente l'osservaizione $\bx$ introduci un nuovo stato $s_{new}$}
-\item aggiorna $\gamma$
-\item aggiorna $f$ 
+\item generate a plan (if no plan exists explore the domain, e.g., with a random policy) 
+\item execute the first action in the plan and observe $\bx$ through sensors
+\item \alert<2>{decide in which state you are based on maximum likelihood. If the likelihood  is too low for all the existing states, create a new state ($s_{new}$)}
+\item update the transition function ($\gamma$) 
+\item update the perception function ($f$)
 \end{enumerate}
 \end{frame}
+
+
 \begin{frame}
   \frametitle{Simple univariate perception function}
 
@@ -332,6 +394,20 @@ Loop until reached goal:
   \only<5>{\node[left] at (0,0) {$s_{new}=\argmax_{s\in\{s_1,s_2,s_{new}\}}f(7.0,s)$ and $f(7,0,s_{new}) \geq \epsilon$};}  
 \end{tikzpicture}
 \end{frame}
+
+\begin{frame}
+\frametitle{The Planning, Acting, and Learning (PAL) Algorithm}
+Loop until goal reached: 
+\begin{enumerate}
+\item generate a plan (if no plan exists explore the domain, e.g., with a random policy) 
+\item execute the first action in the plan and observe $\bx$ through sensors
+\item decide in which state you are based on maximum likelihood. If the likelihood  is too low for all the existing states, create a new state ($s_{new}$)
+\item \alert<2>{update the transition function ($\gamma$)} 
+\item update the perception function ($f$)
+\end{enumerate}
+\end{frame}
+
+
 
 \begin{frame} 
   \frametitle{Updating Transitions: $\updgamma$} 
@@ -436,6 +512,19 @@ $\alpha$, we need more or less evidence to change the planning
 domain.
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{The Planning, Acting, and Learning (PAL) Algorithm}
+Loop until goal reached: 
+\begin{enumerate}
+\item generate a plan (if no plan exists explore the domain, e.g., with a random policy) 
+\item execute the first action in the plan and observe $\bx$ through sensors
+\item decide in which state you are based on maximum likelihood. If the likelihood  is too low for all the existing states, create a new state ($s_{new}$)
+\item update the transition function ($\gamma$) 
+\item \alert<2>{update the perception function ($f$)}
+\end{enumerate}
+\end{frame}
+
 
 
 \begin{frame} 
@@ -568,228 +657,17 @@ and $\Delta\bSigma^2_s = \frac{1}{|O(s)|}(\bx-\bmu_s')^2 +
 
 
 \begin{frame}
-  \frametitle{A simple example}
-  \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=1.2cm,
-                    semithick,  baseline=(current bounding box.center)]
-\node[initial,state] (s11) {$s_{11}$};
-\node[state,above = of s11] (s12) {$s_{12}$};
-\node[state,right = of s11] (s21) {$s_{21}$};
-\node[state,accepting,above = of s21] (s22) {$s_{22}$};
-\path (s11) edge [bend left] node {$e$} (s21)
-            edge [bend left] node {$n$} (s12)
-%            edge [loop below] node {$s,w$} (s11)
-      (s12) edge [bend left] node {$e$} (s22)
-            edge [bend left] node {$s$} (s11)
-%            edge [loop left] node {$n,w$} (s12)
-      (s21) edge [bend left] node {$w$} (s11)
-            edge [bend left] node {$n$} (s22)
-%            edge [loop right] node {$s,e$} (s21)
-      (s22) edge [bend left] node {$w$} (s12)
-%            edge [loop right] node {$n,e$} (s22)
-            edge [bend left] node {$s$} (s21);
-          \end{tikzpicture} 
-\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    colormap/hot,
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    samples=10,
-    domain=0:2,
-    y domain=0:2,
-    ]
-   \def\centerx{.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-      \end{axis}
-    \end{tikzpicture}
-       
-\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    domain=0:2,
-    y domain=0:2]
-    \draw[very thick] (1,2) -- node[sloped,above]{wall} (1,1) -- node[auto]{wall}(2,1);
-    \draw[thin,dashed] (0,1) -- (3,1);
-    \draw[thin,dashed] (1,0) -- (1,2);
-    \draw[thin,dashed] (2,0) -- (2,2);    
-  \end{axis}
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{A simple example}
-  \begin{center}
-  \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=.6cm,
-                    semithick,  baseline=(current bounding box.center)]
-                    \node[initial,state] (s11) {$s_{11}$};
-\node[state,above = of s11] (s12) {$s_{12}$};
-\node[state,right = of s11] (s21) {$s_{21}$};
-\node[state,accepting,above = of s21] (s22) {$s_{22}$};
-\path (s11) edge [bend left] node {$e$} (s21)
-            edge [bend left] node {$n$} (s12)
-      (s12) edge [bend left] node {$s$} (s11)
-      (s21) edge [bend left] node {$w$} (s11)
-      (s22) edge node {$w$} (s12)
-            edge node {$s$} (s21);            
-     \end{tikzpicture} 
-%
-\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    colormap/hot,
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    samples=10,
-    domain=0:2,
-    y domain=0:2,
-    ]
-   \def\centerx{.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-      \end{axis}
-    \end{tikzpicture}
-       
-\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    domain=0:2,
-    y domain=0:2]
-    \draw[very thick] (1,2) -- node[sloped,above]{wall} (1,1) -- node[auto]{wall}(2,1);
-    \draw[thin,dashed] (0,1) -- (3,1);
-    \draw[thin,dashed] (1,0) -- (1,2);
-    \draw[thin,dashed] (2,0) -- (2,2);    
-  \end{axis}
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{A simple example}
-  \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=.6cm,
-                    semithick,  baseline=(current bounding box.center)]
-\node[initial,state] (s11) {$s_{11}$};
-\node[state,above = of s11] (s12) {$s_{12}$};
-\node[state,right = of s11] (s21) {$s_{21}$};
-\node[state,accepting,above = of s21] (s22) {$s_{22}$};
-\node[state,right = of s21] (s31) {$s_{31}$};
-\node[state,right = of s22] (s32) {$s_{32}$};
-\path (s11) edge [bend left] node {$e$} (s21)
-            edge [bend left] node {$n$} (s12)
-      (s12) edge [bend left] node {$s$} (s11)
-%            edge [loop left] node {$n,w$} (s12)
-      (s21) edge [bend left] node {$e$} (s31)
-            edge [bend left] node {$w$} (s11)
-%            edge [loop below] node {$s,n$} (s21)
-      (s22) edge node {$w$} (s12)
-            edge node {$s$} (s21)
-      (s31) edge [bend left] node {$w$} (s21)
-            edge [bend left] node {$n$} (s32)
-%            edge [loop below] node {$s,e$} (s21)
-      (s32) edge node {$w$} (s22)
-%             edge [loop left] node {$n,e$} (s32)
-            edge [bend left] node {$s$} (s31);
-      \end{tikzpicture} 
-%
-\begin{tikzpicture}[scale=.6,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    colormap/hot,
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    samples=10,
-    domain=0:2,
-    y domain=0:2,
-    ]
-   \def\centerx{.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{1.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-   \def\centerx{.5}
-   \def\centery{1.5}
-    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
-        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
-      \end{axis}
-    \end{tikzpicture}
-       
-\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
-  \begin{axis}[view={0}{90},
-    xmin = 0,
-    xmax = 3,
-    ymin = 0,
-    ymax = 2,
-    axis equal image,
-    domain=0:2,
-    y domain=0:2]
-    \draw[very thick] (1,2) -- node[sloped,above]{wall} (1,1) -- node[auto]{wall}(2,1);
-    \draw[thin,dashed] (0,1) -- (3,1);
-    \draw[thin,dashed] (1,0) -- (1,2);
-    \draw[thin,dashed] (2,0) -- (2,2);    
-  \end{axis}
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-\begin{frame}
   \frametitle{Model coherence}
-  \begin{itemize}
-    \item In order to estimate the quality of the model generated by the \PAL\
-algorithm, we should define a method to measure the coherence between
+\begin{itemize}
+\item[$\bullet$] 
+%\itemsep{1cm}
+{\bf Objective:} to estimate the quality of the generated model
+\item[$\bullet$] 
+{\bf Approach:} to measure the coherence between
 an abstract model with perception function and the real world.
-
-\item We introduce a measure called \emph{divergence}. 
-Intuitively, a low divergence means that if
+\item[$\bullet$]
+{\bf Idea:} We introduce a measure called \emph{{\color {red} divergence}}.
+A low divergence means that if
 $\gamma(a,s) = s'$, then if the agent perceives to be in $s$ and
 performs $a$, then after the execution of $a$ it will perceive to
 be in the state $s'$.
@@ -1004,21 +882,6 @@ $|S|$ & \%lrn & \%G \\ \midrule
 
 \begin{frame}
 \frametitle{Experimental Evaluation}
-
-[VIDEO ANIMATO EXPLANATORY EXAMPLE]
-    
-\end{frame}
-
-\begin{frame}
-\frametitle{Experimental Evaluation}
-
-[VIDEO DEL 5X5 ROOM CON RANDOMLY GENRATED GOALS]
-
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Experimental Evaluation}
 \vspace*{-0.5cm}
 \begin{figure}
 \centering
@@ -1104,6 +967,76 @@ State merging and state elimination}
 \end{frame}
 \end{document}
 
+\begin{frame}
+  \frametitle{A simple example}
+  \begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=1.2cm,
+                    semithick,  baseline=(current bounding box.center)]
+\node[initial,state] (s11) {$s_{11}$};
+\node[state,above = of s11] (s12) {$s_{12}$};
+\node[state,right = of s11] (s21) {$s_{21}$};
+\node[state,accepting,above = of s21] (s22) {$s_{22}$};
+\path (s11) edge [bend left] node {$e$} (s21)
+            edge [bend left] node {$n$} (s12)
+%            edge [loop below] node {$s,w$} (s11)
+      (s12) edge [bend left] node {$e$} (s22)
+            edge [bend left] node {$s$} (s11)
+%            edge [loop left] node {$n,w$} (s12)
+      (s21) edge [bend left] node {$w$} (s11)
+            edge [bend left] node {$n$} (s22)
+%            edge [loop right] node {$s,e$} (s21)
+      (s22) edge [bend left] node {$w$} (s12)
+%            edge [loop right] node {$n,e$} (s22)
+            edge [bend left] node {$s$} (s21);
+          \end{tikzpicture} 
+\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
+  \begin{axis}[view={0}{90},
+    colormap/hot,
+    xmin = 0,
+    xmax = 3,
+    ymin = 0,
+    ymax = 2,
+    axis equal image,
+    samples=10,
+    domain=0:2,
+    y domain=0:2,
+    ]
+   \def\centerx{.5}
+   \def\centery{.5}
+    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
+        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
+   \def\centerx{1.5}
+   \def\centery{.5}
+    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
+        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
+   \def\centerx{1.5}
+   \def\centery{1.5}
+    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
+        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
+   \def\centerx{.5}
+   \def\centery{1.5}
+    \addplot3[contour gnuplot,domain=-2:6,domain y=-5:3] 
+        {10*exp(-10*( (x-\centerx)^2 + (y-\centery)^2)/3 )};
+      \end{axis}
+    \end{tikzpicture}
+       
+\begin{tikzpicture}[scale=.7,baseline=(current bounding box.center)]
+  \begin{axis}[view={0}{90},
+    xmin = 0,
+    xmax = 3,
+    ymin = 0,
+    ymax = 2,
+    axis equal image,
+    domain=0:2,
+    y domain=0:2]
+    \draw[very thick] (1,2) -- node[sloped,above]{wall} (1,1) -- node[auto]{wall}(2,1);
+    \draw[thin,dashed] (0,1) -- (3,1);
+    \draw[thin,dashed] (1,0) -- (1,2);
+    \draw[thin,dashed] (2,0) -- (2,2);    
+  \end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
 
 
 \begin{frame}
