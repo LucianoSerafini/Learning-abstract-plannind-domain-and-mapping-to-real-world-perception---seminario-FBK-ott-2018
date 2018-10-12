@@ -46,7 +46,7 @@
 
 \usepackage{booktabs}
 \usepackage{pgfplots}
-\title{Learning abstract planning domains and mappings to real world perceptions}
+\title[Learning Abstract Planning Domains]{Learning abstract planning domains and mappings to real world perceptions}
 \subtitle{}
 % \date{\today}
 \date{}
@@ -184,7 +184,7 @@ planning domain.
 \end{frame}
 
 \begin{frame}
-\frametitle{Planning Domains with  Perception Functions}
+\frametitle{Planning Domains \only<2>{with  Perception Functions}}
 
 \begin{itemize}
 \item[$\bullet$] 
@@ -198,14 +198,17 @@ A Plan $\pi$ is a policy:
 partial function from $\pi: S  \rightharpoonup A$.  
 \onslide<2>{
 \item[$\bullet$]
-{\color {red} Perception Function:  $f:\R^n\times S\rightarrow R^+$}, where $f(\bx,s) = p(\bx|s)$ is a join PDF on $\R^n\times S$\\
+{\color {red} Perception Function:  $f:\R^n\times S\rightarrow R^+$},
+where $f(\bx,s) = p(\bx|s)=\frac{p(\bx,s)}{p(s)}$, with $p(\bx,s)$ a
+joint PDF on $\R^n\times S$\\
 {\color {red} $f(\bx,s)$ is the likelihood of observing $\bx$ being in a state
 $s$.}
 }
 \end{itemize}  
 %
+\hspace{-1cm}
 \begin{tabular}{cc}
-\begin{tikzpicture}[scale=0.5,auto,->]
+\begin{tikzpicture}[x=.3,scale=0.45,every node/.style={scale=0.65},auto,->]
   \node[state] (s11) {$s_{11}$};
   \node[fill=blue!20,state] {$s_{11}$};
   \node[state,above = of s11] (s12) {$s_{12}$};
@@ -233,9 +236,9 @@ $s$.}
 \end{tikzpicture} &
 \onslide<2>{
 %\vspace*{0.4cm}
-\begin{tikzpicture}[scale=0.5]
+\begin{tikzpicture}[scale=0.65]
 \begin{axis}[every axis plot post/.append style={
-  mark=none,domain=-2:6,samples=50,smooth},
+  mark=none,domain=0:5,samples=50,smooth},
   width=\textwidth,
   height=0.5\textwidth,
   axis x line*=bottom, 
@@ -243,7 +246,7 @@ $s$.}
   ymax = 0.34]
   \addplot {gauss(2,1.5)} node [pos=0.5,above] {$f(x,s)$};
 %  \addplot {gauss(10,1.5)} node [pos=.7 5,above] {$f(x,s_2)$};;
-  \node at (1,0) {$\bullet$};
+  \node at (1,0.02) {$\bullet$};
   \node[blue] at (1,0.21) {$\bullet$};
   \draw[dotted] (1,0) -- (1,0.21);
 %  \node at (9,0) {$\bullet$};
@@ -483,11 +486,11 @@ iter   &  Source & action & Target \\ \hline \pause
 \begin{frame} 
   \frametitle{Updating Transitions: A proposal} 
 
-$\updgamma(\gamma,\T)(s,a)=s'$  where $s'$ is \emph{one element}
-of the set
+  $\updgamma(\gamma,\T)(s,a)=s'$
+%  where $s'$ is \emph{one element} of the set
 
 $$
-\{\argmax_{s'\in S}\left(\alpha\cdot\mathbb{1}_{s'=\gamma(s,a)}+
+S' \in \{\argmax_{s'\in S}\left(\alpha\cdot\mathbb{1}_{s'=\gamma(s,a)}+
     (1-\alpha)\cdot|\{i\mid \T_i=\left<s,a,s'\right>\}|
 \right)\}
 $$
@@ -499,12 +502,12 @@ with $\alpha\in[0,1]$.
 Notice that,
 \begin{itemize}
 \item[$\bullet$] 
-if {\color {red} $\alpha = 1$}, we are extremely cautious, we strongly believe in our
+if {\color {red} $\alpha = 1$} we strongly believe in our
 model of the world, and we never change the transition $\gamma$.
 \pause
 \item[$\bullet$] 
-if {\color {red} $\alpha = 0$}, we are extremely impulsive, we do not trust our model,
-and just one evidence makes us to change the model.
+if {\color {red} $\alpha = 0$} we strongly trust our observations and
+we do not trust our model, and transitions are determined only by the evidences 
 \pause
 \item[$\bullet$] 
 if {\color {red} $\alpha \in (0,1)$}, depending on the value of
@@ -705,6 +708,10 @@ $$
   \text{KL}({\color{blue}f(x,\gamma(a,s_i))}||{\color{red}p_a(x|x_i)})}
 $$
 \end{center}
+\only<5>{
+$\text{KL}(p(\bx)||q(\bx)$ is the \alert{Kullback-Leibler divergence} (also
+called \alert{relative entropy}) is a measure of how one probability
+distribution $p(\bx)$ is different from a second one $q(\bx)$. }
 \end{frame}
 
 \begin{frame}{Experimental evaluation. Simple experiment}
